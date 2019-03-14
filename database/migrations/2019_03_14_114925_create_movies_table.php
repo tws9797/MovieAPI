@@ -16,7 +16,6 @@ class CreateMoviesTable extends Migration
         Schema::create('movies', function (Blueprint $table) {
           $table->increments('id');
           $table->string('name', 100)->index();
-          $table->char('category', 2)->index();
           $table->text('plot')->nullable();
           $table->year('year')->index();
           $table->unsignedInteger('director_id');
