@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Model\Actor;
 use Illuminate\Http\Request;
+use App\Http\Resources\Actor\ActorResource;
+use App\Http\Resources\Actor\ActorCollection;
 
 class ActorController extends Controller
 {
@@ -14,7 +16,6 @@ class ActorController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
