@@ -18,8 +18,7 @@ class DirectorResource extends Resource
         return [
           'id' => $this->when(!is_null($this->id), $this->id),
           'name' => $this->when(!is_null($this->name), $this->name),
-          'movie' => $this->when(!$this->whenLoaded('movie')->empty(),
-            MovieResource::collection($this->movies))
+          'movies' => $this->whenLoaded('movies')->pluck('name')
         ];
     }
 }

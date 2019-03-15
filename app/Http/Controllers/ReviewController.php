@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Model\Review;
 use Illuminate\Http\Request;
+use App\Http\Resources\Review\ReviewResource;
+use App\Http\Resources\Review\ReviewCollection;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ReviewController extends Controller
 {
@@ -12,9 +16,8 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
     }
 
     /**

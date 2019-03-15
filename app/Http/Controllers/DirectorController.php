@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Model\Director;
 use Illuminate\Http\Request;
+use App\Http\Resources\Director\DirectorResource;
+use App\Http\Resources\Director\DirectorCollection;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DirectorController extends Controller
 {
@@ -12,9 +16,17 @@ class DirectorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $name = $request->input('name');
+
+        $directors = Director::with('movies')
+          ->when($name, function($query) use($name){
+              return $query->where('name', 'like', "%$name%");
+          })
+          ->paginate(10);
+
+        return new DirectorCollection($directors);
     }
 
     /**
@@ -35,7 +47,27 @@ class DirectorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+          $director = new Director;
+          $director->fill($request->all());
+
+          $director->saveOrFail();
+
+          return response()->json([
+            'id' => $director->id,
+            'created_at' => $director->created_at
+          ], 201);
+        }
+        catch(QueryException $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ], 500);
+        }
+        catch(\Exception $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ], 500);
+        }
     }
 
     /**
@@ -44,9 +76,20 @@ class DirectorController extends Controller
      * @param  \App\Model\Director  $director
      * @return \Illuminate\Http\Response
      */
-    public function show(Director $director)
+    public function show($id)
     {
-        //
+      try{
+        $director = Director::with('movies')->find($id);
+
+        if(!$director) throw new ModelNotFoundException;
+
+        return new DirectorResource($director);
+      }
+      catch(ModelNotFoundException $ex){
+        return response()->json([
+          'message' => $ex->getMessage()
+        ], 404);
+      }
     }
 
     /**
@@ -67,9 +110,34 @@ class DirectorController extends Controller
      * @param  \App\Model\Director  $director
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Director $director)
+    public function update(Request $request, $id)
     {
-        //
+        try{
+          $director = Director::find($id);
+
+          if(!$director) throw new ModelNotFoundException;
+
+          $director->fill($request->all());
+
+          $director->saveOrFail();
+
+          return response()->json(null, 204);
+        }
+        catch(ModelNotFoundException $ex){
+          return response()->json([
+              'message' => $ex->getMessage(),
+          ], 404);
+        }
+        catch(QueryException $ex){
+          return response()->json([
+              'message' => $ex->getMessage(),
+          ], 500);
+        }
+        catch(\Exception $ex){
+          return response()->json([
+              'message' => $ex->getMessage(),
+          ], 500);
+        }
     }
 
     /**
@@ -78,8 +146,21 @@ class DirectorController extends Controller
      * @param  \App\Model\Director  $director
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Director $director)
+    public function destroy($id)
     {
-        //
+        try{
+          $director = Director::find($id);
+
+          if(!$director) throw new ModelNotFoundException;
+
+          $director->delete();
+
+          return response()->json(null, 204);
+        }
+        catch(ModelNotFoundException $ex){
+          return response()->json([
+              'message' => $ex->getMessage(),
+          ], 404);
+        }
     }
 }

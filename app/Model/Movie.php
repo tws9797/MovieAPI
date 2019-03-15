@@ -12,7 +12,6 @@ class Movie extends Model
       'plot',
       'year',
       'director_id',
-      'actors',
     ];
 
     public function director(){

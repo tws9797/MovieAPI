@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Model\Actor;
 use Illuminate\Http\Request;
+use App\Http\Requests\ActorRequest;
 use App\Http\Resources\Actor\ActorResource;
 use App\Http\Resources\Actor\ActorCollection;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ActorController extends Controller
 {
@@ -20,7 +23,7 @@ class ActorController extends Controller
 
       $actors = Actor::with('movies')
         ->when($name, function($query) use($name){
-          return $query->where('name', 'like', '%name%');
+          return $query->where('name', 'like', "%$name%");
         })
         ->paginate(10);
 
@@ -43,14 +46,29 @@ class ActorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ActorRequest $request)
     {
-        $movie = Movie::create($request->all());
+        try{
+          $actor = new Actor;
+          $actor->fill($request->all());
 
-        return response()->json([
-          'id' => $movie->id,
-          'created_at' => $movie->created_at
-        ], 201);
+          $actor->saveOrFail();
+
+          return response()->json([
+            'id' => $actor->id,
+            'created_at' => $actor->created_at
+          ], 201);
+        }
+        catch(QueryException $ex){
+          return response()->json([
+            'message' => $ex->getMessage(),
+          ], 500);
+        }
+        catch(\Exception $ex){
+          return response()->json([
+            'message' => $ex->getMessage(),
+          ], 500);
+        }
     }
 
     /**
@@ -61,16 +79,18 @@ class ActorController extends Controller
      */
     public function show($id)
     {
-        $actor = Actor::find($id);
+        try{
+          $actor = Actor::with('movies')->find($id);
 
-        if(!$actor){
+          if(!$actor) throw new ModelNotFoundException;
+
+          return new ActorResource($actor);
+        }
+        catch(ModelNotFoundException $ex){
           return response()->json([
-              'error' => 404,
-              'message' => 'Not found'
+            'message' => $ex->getMessage(),
           ], 404);
         }
-
-        return new ActorResource($actor);
     }
 
     /**
@@ -91,20 +111,34 @@ class ActorController extends Controller
      * @param  \App\Model\Actor  $actor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ActorRequest $request, $id)
     {
-        $actor = Actor::find($id);
+        try{
+          $actor = Actor::find($id);
 
-        if(!$actor){
-          return response()->json([
-            'error' => 404,
-            'message' => 'Not found'
-          ]);
+          if(!$actor) throw new ModelNotFoundException;
+
+          $actor->fill($request->all());
+
+          $actor->saveOrFail();
+
+          return response()->json(null, 204);
         }
-
-        $actor->update($request->all());
-
-        return response()->json(null, 204);
+        catch(ModelNotFoundException $ex) {
+            return response()->json([
+                'message' => $ex->getMessage(),
+            ], 404);
+        }
+        catch(QueryException $ex) {
+            return response()->json([
+                'message' => $ex->getMessage(),
+            ], 500);
+        }
+        catch(\Exception $ex) {
+            return response()->json([
+                'message' => $ex->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -115,17 +149,19 @@ class ActorController extends Controller
      */
     public function destroy($id)
     {
-      $actor = Actor::find($id);
+      try{
+        $actor = Actor::find($id);
 
-      if(!$actor){
-        return response()->json([
-          'error' => 404,
-          'message' => 'Not found'
-        ]);
+        if(!$actor) throw new ModelNotFoundException;
+
+        $actor->delete();
+
+        return response()->json(null, 204);
       }
-
-      $actor->delete();
-
-      return response()->json(null, 204);
+      catch(ModelNotFoundException $ex){
+        return response()->json([
+            'message' => $ex->getMessage(),
+        ], 404);
+      }
     }
 }

@@ -15,11 +15,10 @@ class ActorResource extends Resource
      */
     public function toArray($request)
     {
-      return [
-        'id' => $this->when(!is_null($this->id), $this->id),
-        'name' => $this->when(!is_null($this->name), mb_strtoupper($this->name)),
-        'movies' => $this->when(!$this->whenLoaded('movies')->isempty(),
-          MovieResource::collection($this->movies))
-      ];
+        return [
+          'id' => $this->when(!is_null($this->id), $this->id),
+          'name' => $this->when(!is_null($this->name), mb_strtoupper($this->name)),
+          'movies' => $this->whenLoaded('movies')->pluck('name')
+        ];
     }
 }
