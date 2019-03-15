@@ -16,6 +16,7 @@ class ActorController extends Controller
      */
     public function index()
     {
+      return new ActorCollection(Actor::paginate(5));
     }
 
     /**
@@ -36,7 +37,12 @@ class ActorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $movie = Movie::create($request->all());
+
+        return response()->json([
+          'id' => $movie->id,
+          'created_at' => $movie->created_at
+        ], 201);
     }
 
     /**
@@ -45,9 +51,18 @@ class ActorController extends Controller
      * @param  \App\Model\Actor  $actor
      * @return \Illuminate\Http\Response
      */
-    public function show(Actor $actor)
+    public function show($id)
     {
-        //
+        $actor = Actor::find($id);
+
+        if(!$actor){
+          return response()->json([
+              'error' => 404,
+              'message' => 'Not found'
+          ], 404);
+        }
+
+        return new ActorResource($actor);
     }
 
     /**
@@ -68,9 +83,20 @@ class ActorController extends Controller
      * @param  \App\Model\Actor  $actor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Actor $actor)
+    public function update(Request $request, $id)
     {
-        //
+        $actor = Actor::find($id);
+
+        if(!$actor){
+          return response()->json([
+            'error' => 404,
+            'message' => 'Not found'
+          ]);
+        }
+
+        $actor->update($request->all());
+
+        return response()->json(null, 204);
     }
 
     /**
@@ -79,8 +105,19 @@ class ActorController extends Controller
      * @param  \App\Model\Actor  $actor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Actor $actor)
+    public function destroy($id)
     {
-        //
+      $actor = Actor::find($id);
+
+      if(!$actor){
+        return response()->json([
+          'error' => 404,
+          'message' => 'Not found'
+        ]);
+      }
+
+      $actor->delete();
+
+      return response()->json(null, 204);
     }
 }

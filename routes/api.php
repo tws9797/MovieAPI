@@ -25,4 +25,4 @@ Route::apiResource('directors', 'DirectorController');
 
 Route::group(['prefix' => 'movies'], function(){
   Route::apiResource('/{movie}/reviews', 'ReviewController');
-})
+});

@@ -17,13 +17,13 @@ class DatabaseSeeder extends Seeder
       factory(App\Model\Movie::class, 50)->create();
       factory(App\Model\Review::class, 300)->create();
       foreach( range(1,30) as $index){
-        DB::table('movie_actor')->insert(
+        DB::table('actor_movie')->insert(
           [
             'movie_id' => App\Model\Movie::select('id')->inRandomOrder()->first()->id,
             'actor_id' => App\Model\Actor::select('id')->inRandomOrder()->first()->id
           ]
         );
-        DB::table('movie_category')->insert(
+        DB::table('category_movie')->insert(
           [
             'movie_id' => App\Model\Movie::select('id')->inRandomOrder()->first()->id,
             'category_id' =>  rand(1,10)

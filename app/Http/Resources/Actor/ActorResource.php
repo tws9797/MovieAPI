@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Actor;
 
 use Illuminate\Http\Resources\Json\Resource;
+use App\Http\Resources\Movie\MovieResource;
 
 class ActorResource extends Resource
 {
@@ -15,7 +16,9 @@ class ActorResource extends Resource
     public function toArray($request)
     {
       return [
+        'id' => $this->id,
         'name' => $this->name,
+        'movies' => MovieResource::collection($this->movies),
       ];
     }
 }

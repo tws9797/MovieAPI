@@ -13,7 +13,7 @@ class CreateMovieActor extends Migration
      */
     public function up()
     {
-        Schema::create('movie_actor', function (Blueprint $table) {
+        Schema::create('actor_movie', function (Blueprint $table) {
           $table->increments('id');
           $table->unsignedInteger('movie_id');
           $table->foreign('movie_id')->references('id')->on('movies')->onDelete('cascade');
