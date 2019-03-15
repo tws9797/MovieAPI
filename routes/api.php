@@ -17,12 +17,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('movies', 'MovieController');
+Route::middleware('api')->namespace('Auth')->prefix('auth')->group(function(){
+  Route::post('login', 'AuthController@login');
+  Route::post('logout', 'AuthController@logout');
+  Route::post('refresh', 'AuthController@refresh');
+  Route::post('me', 'AuthController@me');
+});
 
-Route::apiResource('actors', 'ActorController');
+Route::middleware('jwt.auth')->group(function() {
+  Route::apiResource('movies', 'MovieController');
 
-Route::apiResource('directors', 'DirectorController');
+  Route::apiResource('actors', 'ActorController');
 
-Route::group(['prefix' => 'movies'], function(){
-  Route::apiResource('/{movie}/reviews', 'ReviewController');
+  Route::apiResource('directors', 'DirectorController');
+
+  Route::prefix('movies')->group(function(){
+    Route::apiResource('/{movie}/reviews', 'ReviewController');
+  });
 });
