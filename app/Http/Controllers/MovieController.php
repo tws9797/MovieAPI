@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Movie;
 use Illuminate\Http\Request;
+use App\Http\Requests\MovieRequest;
 use App\Http\Resources\Movie\MovieResource;
 use App\Http\Resources\Movie\MovieCollection;
 use Illuminate\Database\QueryException;
@@ -58,7 +59,7 @@ class MovieController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MovieRequest $request)
     {
         try{
           $movie = new Movie;
@@ -123,7 +124,7 @@ class MovieController extends Controller
      * @param  \App\Model\Movie  $movie
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(MovieRequest $request, $id)
     {
         try{
           $movie = Movie::find($id);

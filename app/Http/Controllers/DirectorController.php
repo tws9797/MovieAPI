@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Director;
 use Illuminate\Http\Request;
+use App\Http\Requests\DirectorRequest;
 use App\Http\Resources\Director\DirectorResource;
 use App\Http\Resources\Director\DirectorCollection;
 use Illuminate\Database\QueryException;
@@ -45,7 +46,7 @@ class DirectorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(DirectorRequest $request)
     {
         try{
           $director = new Director;
@@ -110,7 +111,7 @@ class DirectorController extends Controller
      * @param  \App\Model\Director  $director
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(DirectorRequest $request, $id)
     {
         try{
           $director = Director::find($id);

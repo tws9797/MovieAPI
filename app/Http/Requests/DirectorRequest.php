@@ -13,7 +13,7 @@ class DirectorRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,16 @@ class DirectorRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|string|max:100',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'The :attribute is required.',
+            'name.string' => 'The :attribute must be a string',
+            'name.max' => 'The :attribute must consist below 100 characters.',
         ];
     }
 }

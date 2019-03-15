@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\YearRule;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class MovieRequest extends FormRequest
@@ -13,7 +15,7 @@ class MovieRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,19 @@ class MovieRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|string|max:100',
+            'year' => ['required', 'integer', new YearRule],
+            //'year' => 'regex:/.../i'
+        ];
+    }
+
+    public function messages(){
+        return [
+          'year.required' => 'The :attribute is required.',
+          'year.integer' => 'The :attribute should be integer.',
+          'year.digits' => 'The :attribute should be 4 digits.',
+          'year.min' => 'The year is not in range.',
+          'year.max' => 'The year is not in range.',
         ];
     }
 }
