@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Director;
 
 use Illuminate\Http\Resources\Json\Resource;
+use App\Http\Resources\Movie\MovieResource;
 
 class DirectorResource extends Resource
 {
@@ -15,7 +16,10 @@ class DirectorResource extends Resource
     public function toArray($request)
     {
         return [
-          'name' => $this->name,
+          'id' => $this->when(!is_null($this->id), $this->id),
+          'name' => $this->when(!is_null($this->name), $this->name),
+          'movie' => $this->when(!$this->whenLoaded('movie')->empty(),
+            MovieResource::collection($this->movies))
         ];
     }
 }

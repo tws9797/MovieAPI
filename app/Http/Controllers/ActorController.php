@@ -14,9 +14,17 @@ class ActorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return new ActorCollection(Actor::paginate(5));
+      $name = $request->input('name');
+
+      $actors = Actor::with('movies')
+        ->when($name, function($query) use($name){
+          return $query->where('name', 'like', '%name%');
+        })
+        ->paginate(10);
+
+      return new ActorCollection($actors);
     }
 
     /**
