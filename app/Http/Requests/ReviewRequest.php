@@ -13,7 +13,7 @@ class ReviewRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,17 @@ class ReviewRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'star' => 'required|integer|min:1|max:5',
+            'plot' => 'required|string|max:500'
+        ];
+    }
+
+    public function messages(){
+        return [
+            'star.required' => 'The :attribute is required.',
+            'star.integer' => 'The :attribute must be integer.',
+            'plot.string' => 'The :attribute must be string.',
+            'plot.max' => 'The :attribute has exceed the maximum number of characters.',
         ];
     }
 }

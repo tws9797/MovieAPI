@@ -18,6 +18,16 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
+      $star = $request->input('star');
+      $plot = $request->input('plot');
+
+      $reviews = Review::when($star, function($query) use($star){
+        return $query->where('star', $star);
+      })->when($plot, function($query) use($plot){
+        return $query->where('plot', 'like', "%$plot%");
+      })->paginate(10);
+
+      return new ReviewCollection($reviews);
     }
 
     /**
@@ -36,9 +46,29 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ReviewRequest $request)
     {
-        //
+        try{
+          $review = new Review;
+          $request['user_id'] = $request->user()->id;
+          $review->fill([$request->all()]);
+          $review->saveOrFail();
+
+          return response()->json([
+            'id' => $review->id,
+            'created_at' => $review->created_at
+          ], 201);
+        }
+        catch(QueryException $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ], 500);
+        }
+        catch(\Exception $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ], 500);
+        }
     }
 
     /**
@@ -47,9 +77,19 @@ class ReviewController extends Controller
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function show(Review $review)
+    public function show($id)
     {
-        //
+      try{
+        $review = Review::findOrFail($id);
+        if(!$review) throw ModelNotFoundException;
+
+        return new ReviewResource($review);
+      }
+      catch(ModelNotFoundException $ex){
+        return response()->json([
+          'message' => $ex->getMessage()
+        ], 404);
+      }
     }
 
     /**
@@ -70,9 +110,34 @@ class ReviewController extends Controller
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(ReviewRequest $request, $id)
     {
-        //
+        try{
+          $review = Review::findOrFail($id);
+          if(!$review) return ModelNotFoundException;
+          else if($request->user()->id !== $review->user_id){
+            return response()->json(['error' => 'You can only edit your own review.'], 403);
+          }
+
+          $review->fill($request->all());
+          $review->saveOrFail();
+          return response()->json(null, 204);
+        }
+        catch(ModelNotFoundException $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ]);
+        }
+        catch(QueryException $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ]);
+        }
+        catch(\Exception $ex){
+          return response()->json([
+            'message' => $ex->getMessage()
+          ]);
+        }
     }
 
     /**
@@ -83,6 +148,20 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        //
+      try{
+        $review = Review::findOrFail($id);
+        if(!$review) return ModelNotFoundException;
+        else if($request->user()->id !== $review->user_id){
+          return response()->json(['error' => 'You can only edit your own review.'], 403);
+        }
+
+        $review->delete();
+        return response()->json(null, 204);
+      }
+      catch(ModelNotFoundException $ex){
+        return response()->json([
+          'message' => $ex->getMessage()
+        ]);
+      }
     }
 }

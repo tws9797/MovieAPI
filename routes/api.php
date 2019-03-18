@@ -24,7 +24,7 @@ Route::middleware('api')->namespace('Auth')->prefix('auth')->group(function(){
   Route::post('me', 'AuthController@me');
 });
 
-Route::middleware('jwt.auth')->group(function() {
+Route::middleware('jwt.auth', ['except' => 'post'])->group(function() {
   Route::apiResource('movies', 'MovieController');
 
   Route::apiResource('actors', 'ActorController');

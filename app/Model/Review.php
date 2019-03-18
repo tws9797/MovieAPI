@@ -11,8 +11,12 @@ class Review extends Model
       'review',
       'star'
     ];
-    
+
     public function movie(){
-      return $this->hasMany(Review::class);
+      return $this->belongsTo(Movie::class);
+    }
+
+    public function user(){
+      return $this->belongsTo(User::class);
     }
 }
