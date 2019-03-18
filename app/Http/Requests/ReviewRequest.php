@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
-
 class ReviewRequest extends FormRequest
 {
     /**
@@ -15,7 +12,6 @@ class ReviewRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,16 +21,27 @@ class ReviewRequest extends FormRequest
     {
         return [
             'star' => 'required|integer|min:1|max:5',
+<<<<<<< HEAD
             'plot' => 'required|string|max:500'
         ];
     }
 
+=======
+            'review' => 'required|string|max:500'
+        ];
+    }
+>>>>>>> d5e022e
     public function messages(){
         return [
             'star.required' => 'The :attribute is required.',
             'star.integer' => 'The :attribute must be integer.',
+<<<<<<< HEAD
             'plot.string' => 'The :attribute must be string.',
             'plot.max' => 'The :attribute has exceed the maximum number of characters.',
+=======
+            'review.string' => 'The :attribute must be string.',
+            'review.max' => 'The :attribute has exceed the maximum number of characters.',
+>>>>>>> d5e022e
         ];
     }
 }

@@ -16,6 +16,7 @@ class ReviewResource extends Resource
     {
         return [
           'id' =>  $this->when(!is_null($this->id), $this->id),
+          'username' => $this->when(!is_null($this->user_id), \App\User::find($this->user_id)->name),
           'review' => $this->when(!is_null($this->review), $this->review),
           'star' => $this->when(!is_null($this->star), $this->star)
         ];

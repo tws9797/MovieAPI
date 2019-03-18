@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Model\Review;
+use App\Model\Movie;
 use Illuminate\Http\Request;
+use App\Http\Requests\ReviewRequest;
 use App\Http\Resources\Review\ReviewResource;
-use App\Http\Resources\Review\ReviewCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
 class ReviewController extends Controller
 {
     /**
@@ -20,16 +18,23 @@ class ReviewController extends Controller
     {
       $star = $request->input('star');
       $plot = $request->input('plot');
+<<<<<<< HEAD
 
+=======
+>>>>>>> d5e022e
       $reviews = Review::when($star, function($query) use($star){
         return $query->where('star', $star);
       })->when($plot, function($query) use($plot){
         return $query->where('plot', 'like', "%$plot%");
+<<<<<<< HEAD
       })->paginate(10);
 
       return new ReviewCollection($reviews);
+=======
+      })->get();
+      return ReviewResource::collection($reviews);
+>>>>>>> d5e022e
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -39,13 +44,13 @@ class ReviewController extends Controller
     {
         //
     }
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function store(ReviewRequest $request)
     {
         try{
@@ -54,6 +59,14 @@ class ReviewController extends Controller
           $review->fill([$request->all()]);
           $review->saveOrFail();
 
+=======
+    public function store(ReviewRequest $request, Movie $movie)
+    {
+        try{
+          $review = new Review;
+          $review->fill(array_merge($request->all(), ['user_id' => $request->user()->id]));
+          $movie->reviews()->save($review);
+>>>>>>> d5e022e
           return response()->json([
             'id' => $review->id,
             'created_at' => $review->created_at
@@ -70,13 +83,13 @@ class ReviewController extends Controller
           ], 500);
         }
     }
-
     /**
      * Display the specified resource.
      *
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function show($id)
     {
       try{
@@ -84,6 +97,14 @@ class ReviewController extends Controller
         if(!$review) throw ModelNotFoundException;
 
         return new ReviewResource($review);
+=======
+    public function show($movieId, $id)
+    {
+      try{
+        $reviewFound = Review::findOrFail($id);
+        if(!$reviewFound) throw ModelNotFoundException;
+        return new ReviewResource($reviewFound);
+>>>>>>> d5e022e
       }
       catch(ModelNotFoundException $ex){
         return response()->json([
@@ -91,7 +112,6 @@ class ReviewController extends Controller
         ], 404);
       }
     }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -102,7 +122,6 @@ class ReviewController extends Controller
     {
         //
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -110,7 +129,11 @@ class ReviewController extends Controller
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
+<<<<<<< HEAD
     public function update(ReviewRequest $request, $id)
+=======
+    public function update(ReviewRequest $request, $movieId, $id)
+>>>>>>> d5e022e
     {
         try{
           $review = Review::findOrFail($id);
@@ -118,7 +141,10 @@ class ReviewController extends Controller
           else if($request->user()->id !== $review->user_id){
             return response()->json(['error' => 'You can only edit your own review.'], 403);
           }
+<<<<<<< HEAD
 
+=======
+>>>>>>> d5e022e
           $review->fill($request->all());
           $review->saveOrFail();
           return response()->json(null, 204);
@@ -139,14 +165,13 @@ class ReviewController extends Controller
           ]);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Review $review)
+    public function destroy(Request $request, $movieId, $id)
     {
       try{
         $review = Review::findOrFail($id);
@@ -154,7 +179,10 @@ class ReviewController extends Controller
         else if($request->user()->id !== $review->user_id){
           return response()->json(['error' => 'You can only edit your own review.'], 403);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> d5e022e
         $review->delete();
         return response()->json(null, 204);
       }
