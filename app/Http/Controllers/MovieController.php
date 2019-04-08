@@ -9,6 +9,7 @@ use App\Http\Resources\Movie\MovieResource;
 use App\Http\Resources\Movie\MovieCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class MovieController extends Controller
 {
@@ -22,7 +23,7 @@ class MovieController extends Controller
         $name = $request->input('name');
         $year = $request->input('year');
         $director = $request->input('director');
-        $actor = $request->input('actors');
+        $actor = $request->input('actor');
 
         $movies = Movie::with(['actors', 'director'])
           ->whereHas('actors', function($query) use($actor){

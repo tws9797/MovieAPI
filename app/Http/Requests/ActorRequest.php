@@ -25,6 +25,7 @@ class ActorRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100',
+            'movies' => 'required|exists:movies,id'
         ];
     }
 
@@ -34,6 +35,8 @@ class ActorRequest extends FormRequest
             'name.required' => 'The :attribute is required.',
             'name.string' => 'The :attribute must be a string',
             'name.max' => 'The :attribute must consist below 100 characters.',
+            'movies.required' => 'The :attribute is required.',
+            'movies.exists' => 'The movie does not exists.'
         ];
     }
 }

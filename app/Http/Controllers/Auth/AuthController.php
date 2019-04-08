@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\User;
+use Bouncer;
+use Illuminate\Http\Request;
+use Validator;
 
 class AuthController extends Controller
 {
@@ -14,8 +18,32 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
+
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required',
+            'password'=> 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        $user = User::create([
+              'name' => $request->name,
+             'email'    => $request->email,
+             'password' => $request->password,
+         ]);
+
+        Bouncer::assign('member')->to($user);
+        $token = auth()->login($user);
+
+        return $this->respondWithToken($token);
+    }
+
 
     /**
      * Get a JWT via given credentials.

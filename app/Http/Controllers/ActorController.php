@@ -54,6 +54,8 @@ class ActorController extends Controller
 
           $actor->saveOrFail();
 
+          $actor->movies()->sync($request->movies);
+
           return response()->json([
             'id' => $actor->id,
             'created_at' => $actor->created_at

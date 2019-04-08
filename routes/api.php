@@ -12,26 +12,52 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::middleware('api')->namespace('Auth')->prefix('auth')->group(function(){
+  Route::post('register', 'AuthController@register');
   Route::post('login', 'AuthController@login');
   Route::post('logout', 'AuthController@logout');
   Route::post('refresh', 'AuthController@refresh');
   Route::post('me', 'AuthController@me');
 });
-
-Route::middleware('jwt.auth', ['except' => 'post'])->group(function() {
-  Route::apiResource('movies', 'MovieController');
-
-  Route::apiResource('actors', 'ActorController');
-
-  Route::apiResource('directors', 'DirectorController');
-
+Route::middleware('jwt.auth')->group(function() {
   Route::prefix('movies')->group(function(){
     Route::apiResource('/{movie}/reviews', 'ReviewController');
   });
+});
+
+Route::middleware(['jwt.auth', 'can:view-movies'])->group(function() {
+  Route::apiResource('movies', 'MovieController')->only([
+    'index',
+    'show',
+  ]);
+
+  Route::apiResource('actors', 'ActorController')->only([
+    'index',
+    'show',
+  ]);
+
+  Route::apiResource('directors', 'DirectorController')->only([
+    'index',
+    'show',
+  ]);
+});
+
+Route::middleware(['jwt.auth', 'can:manage-movies'])->group(function() {
+  Route::apiResource('movies', 'MovieController')->only([
+    'store',
+    'update',
+    'destroy',
+  ]);
+
+  Route::apiResource('actors', 'ActorController')->only([
+    'store',
+    'update',
+    'destroy',
+  ]);
+
+  Route::apiResource('directors', 'DirectorController')->only([
+    'store',
+    'update',
+    'destroy',
+  ]);
 });
