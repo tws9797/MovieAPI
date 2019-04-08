@@ -40,13 +40,18 @@ class InitBouncer extends Command
     public function handle()
     {
         $admin = Bouncer::role()->create([
-          'name' => 'admin',
-          'title' => 'Administrator'
+            'name' => 'admin',
+            'title' => 'Administrator'
         ]);
 
         $member = Bouncer::role()->create([
             'name' => 'member',
             'title' => 'Member',
+        ]);
+
+        $manageRoles = Bouncer::ability()->create([
+            'name' => 'manage-roles',
+            'title' => 'Manage Roles'
         ]);
 
         $manageMovies = Bouncer::ability()->create([
@@ -61,6 +66,7 @@ class InitBouncer extends Command
 
         Bouncer::allow($admin)->to($manageMovies);
         Bouncer::allow($admin)->to($viewMovies);
+        Bouncer::allow($admin)->to($manageRoles);
 
         Bouncer::allow($member)->to($viewMovies);
 

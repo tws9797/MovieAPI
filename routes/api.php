@@ -61,3 +61,8 @@ Route::middleware(['jwt.auth', 'can:manage-movies'])->group(function() {
     'destroy',
   ]);
 });
+
+Route::middleware(['jwt.auth', 'can:manage-roles'])->group(function() {
+  Route::post('/admin/assign', 'AdminController@assign');
+  Route::post('/admin/retract', 'AdminController@retract');
+});
